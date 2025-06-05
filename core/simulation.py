@@ -22,77 +22,6 @@ from core.simulation_core import SpotIO, _spot_status_check
 from tools.io_checks import IO_check_spot
 from tools.io_checks import IO_check_drop
 from tools.io_checks import IO_check_cube
-# def IO_check_spot(base_position: np.ndarray, temp_position: np.ndarray, constants: dict, IO_status: str) -> str:
-#     radius   = constants['radius']
-#     bottom_z = constants['spot_bottom_height']
-#     bottom_R = constants['spot_bottom_r']  # ← 小文字に注意
-#     limit    = constants['limit']
-
-#     z_tip = temp_position[2]
-#     r_tip = LA.norm(temp_position)
-#     xy_dist = np.sqrt(temp_position[0]**2 + temp_position[1]**2)
-
-#     if z_tip > bottom_z + limit:
-#         if r_tip > radius + limit:
-#             return "sphere_out"
-
-
-
-
-
-
-
-#     INSIDE = "inside"
-#     BORDER = "border"
-#     SPHERE_OUT = "sphere_out"
-#     BOTTOM_OUT = "bottom_out"
-#     SPOT_EDGE_OUT = "spot_edge_out"
-#     ON_POLYGON = "ON_POLYGON"
-#     SPOT_BOTTOM = "spot_bottom"
-
-
-#     radius = constants.get("spot_r", constants.get("radius", 0.0))
-#     bottom_z = constants.get("spot_bottom_height", 0.0)
-#     bottom_r = constants.get("spot_bottom_r", 0.0)
-#     limit = constants.get("limit", 1e-9)
-
-#     z_tip = temp_position[2]
-#     r_tip = np.linalg.norm(temp_position)
-#     xy_dist = np.linalg.norm(temp_position[:2])
-
-#     if z_tip > bottom_z + limit:
-#         if r_tip > radius + limit:
-#             return SpotIO.SPHERE_OUT
-#         if r_tip < radius - limit:
-#             return SpotIO.ON_POLYGON if stick_status > 0 else IOStatus.INSIDE
-#         return SpotIO.BORDER
-
-#     if z_tip < bottom_z - limit:
-#         denom = temp_position[2] - base_position[2]
-#         if abs(denom) < limit:
-#             return SpotIO.SPHERE_OUT
-#         t = (bottom_z - base_position[2]) / denom
-#         if t < 0 or t > 1:
-#             return SpotIO.SPHERE_OUT
-#         intersect_xy = base_position[:2] + t * (temp_position[:2] - base_position[:2])
-#         dist_xy = np.linalg.norm(intersect_xy)
-#         if dist_xy < bottom_r + limit:
-#             return SpotIO.BOTTOM_OUT
-#         return SpotIO.SPHERE_OUT
-
-#     if bottom_z - limit < z_tip < bottom_z + limit:
-#         if xy_dist > bottom_r + limit:
-#             return SpotIO.SPOT_EDGE_OUT
-#         if abs(xy_dist - bottom_r) <= limit:
-#             return SpotIO.BORDER
-#         if xy_dist < bottom_r - limit:
-#             if prev_stat in (SpotIO.SPOT_EDGE_OUT, SpotIO.ON_POLYGON) or stick_status > 0:
-#                 return SpotIO.ON_POLYGON
-#             return SpotIO.SPOT_BOTTOM
-
-#     return IOStatus.INSIDE
-
-
 def _io_check_spot(
     base_position: np.ndarray,
     temp_position: np.ndarray,
@@ -167,8 +96,6 @@ def _io_check_spot(
         status = _spot_status_check(pos, candidate, constants, prev_stat, stick_status)
 
     return candidate, status, bottom_hit
-
-
 def _line_sphere_intersection(p0: np.ndarray, p1: np.ndarray, r: float) -> tuple[np.ndarray, float]:
     """Return intersection point and remaining distance after hitting the sphere."""
     d = p1 - p0
@@ -196,13 +123,9 @@ def _line_sphere_intersection(p0: np.ndarray, p1: np.ndarray, r: float) -> tuple
     intersection = p0 + d_unit * t
     remaining = max(d_norm - t, 0.0)
     return intersection, remaining
-
-
 def _reflect(vec: np.ndarray, normal: np.ndarray) -> np.ndarray:
     """Reflect ``vec`` on plane defined by ``normal``."""
     return vec - 2.0 * np.dot(vec, normal) * normal
-
-
 def ON_POLYGON(
     current_pos: np.ndarray,
     polygon_idx: int,
@@ -234,8 +157,6 @@ def ON_POLYGON(
         )
 
     return next_vector
-
-
 def detach_edge_mode(
     current_pos: np.ndarray,
     spot_r: float,
@@ -273,8 +194,6 @@ def detach_edge_mode(
     global_vec /= np.linalg.norm(global_vec) + 1e-12
 
     return global_vec
-
-
 class SpermSimulation:
     def __init__(self, constants):
         self.constants = constants

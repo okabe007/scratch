@@ -1583,7 +1583,6 @@ class SpermTrajectoryVisualizer:
 
         plt.show()
         return output_path
-
 def setup_database(conn):
     """
     Create required tables if they do not exist.

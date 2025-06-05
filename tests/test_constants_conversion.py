@@ -19,9 +19,10 @@ def test_gamete_r_conversion():
 
 
 def test_drop_r_conversion():
-    constants = {"shape": "drop", "drop_r": 500}
+    constants = {"shape": "drop", "vol": (4/3)*math.pi*(0.5**3)}  # ← 0.5mm の球体
     result = calculate_derived_constants(constants)
     assert math.isclose(result["drop_r"], 0.5, rel_tol=1e-12)
+
 
 
 def test_number_of_sperm_calculation():

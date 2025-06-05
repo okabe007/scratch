@@ -13,8 +13,6 @@ from tools.plot_utils import plot_2d_trajectories, plot_3d_movie_trajectories
 from tools.geometry import CubeShape, DropShape, SpotShape, CerosShape, _handle_drop_outside
 from tools.enums import IOStatus
 from simcore.motion_modes.drop_mode import drop_polygon_move
-
-
 def __init__(self, constants):
     self.constants = constants
     float_keys = ['spot_angle', 'vol', 'sperm_conc', 'vsl', 'deviation', 'surface_time', 'gamete_r', 'sim_min', 'sample_rate_hz']
@@ -32,8 +30,6 @@ def __init__(self, constants):
             except Exception:
                 print(f'[WARNING] {key} = {self.constants[key]} をint変換できませんでした')
     self.constants = calculate_derived_constants(self.constants)
-
-
 def is_vector_meeting_egg(self, base_position, temp_position, egg_center, gamete_r):
     vector = temp_position - base_position
     distance_base = LA.norm(base_position - egg_center)
@@ -53,7 +49,6 @@ def is_vector_meeting_egg(self, base_position, temp_position, egg_center, gamete
     if 0 <= t1 <= 1 or 0 <= t2 <= 1:
         return True
     return False
-
 def run(self, sim_repeat: int, surface_time: float, sample_rate_hz: int):
     from tools.io_checks import IO_check_drop, IO_check_spot, IO_check_cube
     from tools.egg_placement import _egg_position
@@ -137,7 +132,6 @@ def run(self, sim_repeat: int, surface_time: float, sample_rate_hz: int):
     self.trajectories = np.array(self.trajectory)
     self.vectors = np.array(self.vectors)
     print(f"[DEBUG] run完了: sperm={len(self.trajectory)}, steps={number_of_steps}, step_len={step_len:.4f} mm")
-
 import matplotlib.pyplot as plt
 
 def plot_trajectories(self, max_sperm=5, save_path=None):
@@ -234,7 +228,6 @@ def plot_trajectories(self, max_sperm=5, save_path=None):
     plt.savefig(save_path)
     plt.close()
     print(f'[INFO] 軌跡画像を保存しました: {save_path}')
-
 def plot_movie_trajectories(self, save_path=None, fps: int=5):
     """Animate recorded trajectories and save to a movie file."""
     import numpy as np
@@ -287,8 +280,6 @@ def plot_movie_trajectories(self, save_path=None, fps: int=5):
     print(f'[INFO] 動画を保存しました: {save_path}')
     return save_path
     return (np.array(traj), intersection_records)
-
-
 def _make_local_basis(forward: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Return two unit vectors orthogonal to ``forward``."""
     f = forward / (np.linalg.norm(forward) + 1e-12)
@@ -300,9 +291,6 @@ def _make_local_basis(forward: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     y /= np.linalg.norm(y) + 1e-12
     x = np.cross(y, f)
     return x, y
-
-
-
 def _perturb_direction(prev: np.ndarray, deviation: float, rng: np.random.Generator) -> np.ndarray:
     """Return a unit vector deviated from ``prev``."""
     lx, ly = _make_local_basis(prev)
@@ -314,11 +302,6 @@ def _perturb_direction(prev: np.ndarray, deviation: float, rng: np.random.Genera
     )
     new_dir /= np.linalg.norm(new_dir) + 1e-12
     return new_dir
-
-
-
-# core/simulation_core.py または tools/io_status.py などに入れる
-
 from enum import Enum
 
 class SpotIO(Enum):
@@ -331,9 +314,6 @@ class SpotIO(Enum):
     SPOT_BOTTOM = "spot_bottom"
     REFLECT = "reflect"     # ← spot の特殊反射（必要なら）
     STICK = "stick"         # ← spot の貼り付き
-
-
-
 def _spot_status_check(
     base_position: np.ndarray,
     temp_position: np.ndarray,
@@ -342,7 +322,6 @@ def _spot_status_check(
     stick_status: int = 0,
 ) -> str:
     """Return IO status for spot shape without modifying the position."""
-
 class SpermSimulation:
 
     def __init__(self, constants):
