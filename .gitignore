@@ -1,0 +1,22 @@
+# 画像・動画・実験データなど
+*.jpg
+*.jpeg
+*.png
+*.csv
+*.npy
+*.mp4
+*.xlsm
+*.db
+
+# Pythonキャッシュ
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# macOS固有ファイル
+.DS_Store
+
+# 仮想環境やIDE設定
+venv/
+env/
+.vscode/

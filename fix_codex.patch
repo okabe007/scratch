@@ -1,0 +1,57 @@
+diff --git a/spermsim/main.py b/spermsim/main.py
+index 3f2f5b554118592903131f7f2b7dcffeef117afe..8d273a508bacca1f8853668e5a7388e6c2c8e26b 100644
+--- a/spermsim/main.py
++++ b/spermsim/main.py
+@@ -1523,51 +1523,51 @@ class SpermTrajectoryVisualizer:
+         if shape == "ceros":
+             plt.ion()
+             fig, ax = plt.subplots(figsize=(10, 4))
+             ax.set_xlim(-0.815, 0.815)
+             ax.set_ylim(-0.62, 0.62)
+             ax.set_aspect('equal', adjustable='box')
+             ax.set_xlabel("X")
+             ax.set_ylabel("Y")
+             ax.set_title("CEROS 2D Animation (Zoomed)")
+             lines = [ax.plot([], [], lw=2)[0] for _ in range(num_sperm)]
+             def init():
+                 for line in lines:
+                     line.set_data([], [])
+                 return lines
+             def animate(i):
+                 if i % 10 == 0:
+                     percentage = (i / (n_sim - 1)) * 100
+                     print(f"Progress: {percentage:.2f}%")
+                 for j, line in enumerate(lines):
+                     base_pos = self.simulation.trajectory[j, i]
+                     end_pos  = self.simulation.trajectory[j, i + 1]
+                     xdata = [base_pos[0], end_pos[0]]
+                     ydata = [base_pos[1], end_pos[1]]
+                     line.set_data(xdata, ydata)
+                     line.set_color(self.simulation.vec_colors[j, i])
+-                    line.set_linewidth(self.simulation.vec_thickness_3d[j, i])
++                    line.set_linewidth(self.simulation.vec_thickness_2d[j, i])
+                 return lines
+             anim = FuncAnimation(
+                 fig,
+                 animate,
+                 init_func=init,
+                 frames=n_sim - 1,
+                 interval=180,
+                 blit=False
+             )
+             output_folder = MOV_DIR                                             
+             os.makedirs(output_folder, exist_ok=True)
+             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+             mov_filename = f"sperm_simulation_ceros_{timestamp}.mp4"
+             output_path = os.path.join(output_folder, mov_filename)
+             _safe_anim_save(anim, output_path)                                        
+             print(f"{output_path}")
+             plt.show()
+             return output_path
+         else:
+             plt.ion()
+             fig = plt.figure(figsize=(10, 4))
+             ax = fig.add_subplot(111, projection='3d')
+             merged_events = self.simulation.merge_contact_events()
+             contacts_count = len(merged_events)
+             if self.constants["sim_min"] > 0:
