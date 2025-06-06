@@ -7,8 +7,6 @@ import numpy as np
 import math
 import time
 from pathlib import Path
-from tools.ini_handler import save_config, load_config
-
 
 # プロジェクトのルート（trajectory_reboot）を sys.path に追加
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -248,20 +246,19 @@ def calc_spot_geometry(volume_ul: float, angle_deg: float) -> tuple[float, float
 # ---------------------------------------------------------------------------
 # Tkinter GUI クラス
 # ---------------------------------------------------------------------------
-
-class SimApp:
-    def __init__(self, root: tk.Tk):
-        self.root = root
-        self.root.title("Sperm Simulation GUI")
-        self.root.geometry("780x900")
+class SimApp(tk.Tk):
+    def __init__(self) -> None:
+        
+        super().__init__()
+        self.title("Sperm Simulation GUI")
+        self.geometry("780x900")
         self.config_data = load_config()  # .ini → dict
         self.tk_vars: dict[str, tk.Variable] = {}  # Param ↔ Tk 変数
         self.save_var = tk.BooleanVar()
         self.save_var.set(True)
         # スクロールキャンバス
-        canvas = tk.Canvas(self.root)
-        vbar = ttk.Scrollbar(self.root, orient="vertical", command=canvas.yview)
-
+        canvas = tk.Canvas(self)
+        vbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
         
         self.scroll_frame = ttk.Frame(canvas)
         canvas.create_window((0, 0), window=self.scroll_frame, anchor="nw")
@@ -434,19 +431,15 @@ class SimApp:
     # ---------------------------------------------------------------------
     
     def _on_save(self):
-        import time
         from tools.derived_constants import calculate_derived_constants
         from tools.ini_handler import save_config
+        from tools.seed import get_seed
 
         # GUIフォームから値を取得
         constants = {key: var.get() for key, var in self.tk_vars.items()}
 
         # seed_number の補正（"None" の場合は時間から生成）
-        seed_raw = constants.get("seed_number", "None")
-        if seed_raw == "None":
-            constants["seed_number"] = int(time.time() * 1000) % (2**32)
-        else:
-            constants["seed_number"] = int(seed_raw)
+        constants["seed_number"] = get_seed(constants.get("seed_number", "None"))
 
         # 派生変数を追加
         constants = calculate_derived_constants(constants)
@@ -455,6 +448,9 @@ class SimApp:
         save_config(constants)
         print("[SimApp] 設定を sperm_config.ini に保存しました")
 
+        # GUI入力から定数を取得し、派生変数を計算
+
+    
     def _on_save_and_exit(self):
         self._on_save()
         self.destroy()
